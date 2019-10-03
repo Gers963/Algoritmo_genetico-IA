@@ -5,8 +5,9 @@
 
     function analise(){
 
-        $quantidade_de_individuos = 101;
+        $quantidade_de_individuos = 1001;
         $criterio_de_selecao = 4;
+        $melhor_individuo = '11111111';
         $t = 1;
         $geracoes = 1;
 
@@ -22,7 +23,7 @@
 
             for ($i = 0; $i < $quantidade_de_individuos; $i++) {
                 echo "INDIVIDUO Nº " . $i . "      CODIGO GENETICO: " . $individuos[$i]->cod_genetico . "\n";
-                    if ($individuos[$i]->cod_genetico == '11111111') {
+                    if ($individuos[$i]->cod_genetico == $melhor_individuo) {
                         echo "individuo: " . $i . "     Gerção: ". $geracoes ."    Codigo Genetico:" . $individuos[$i]->cod_genetico;
                         return $individuos[$i]->cod_genetico;
                     }
@@ -38,7 +39,7 @@
                     //==========================================================================//
                      echo "INDIVIDUO MUTADO: ". $t ."       CODIGO GENETICO: " . $nova_geracao[$i]->cod_genetico . "\n";
 
-                    if ($nova_geracao[$i]->cod_genetico == '11111111') {
+                    if ($nova_geracao[$i]->cod_genetico == $melhor_individuo) {
                         echo "individuo Novo: " . $t . "     Gerção: ". $geracoes ."    Codigo Genetico:" . $nova_geracao[$i]->cod_genetico;
                         return $nova_geracao[$i]->cod_genetico;
                     }
@@ -53,4 +54,6 @@
             $geracoes++;
         }
     }
-analise();
+
+
+    analise();
