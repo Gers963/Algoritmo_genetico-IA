@@ -1,51 +1,93 @@
 <?php
-
-class individuo{
-    public $cod_genetico;
+function gerarindividuos(){
+    $quantidade_de_individuos = 1000;
+    $individuos = array();
+    for ($j = 0; $j <= $quantidade_de_individuos; $j++) {
+        $individuos[$j]  = null;
+        for ($i = 0; $i < 8; $i++) {
+            $individuos[$j] .= rand(0, 1);
+        }
+    }
+    return $individuos;
 }
-
-function analise(){
-
-    $quantidade_de_individuos = 101;
-    $criterio_de_selecao = 4;            //numero menor que 8
-    $melhor_individuo = '11111111';
+function selecao($resultado){
+    $melhor_individuo = '111111111';
+    $i=0;
     $geracoes = 1;
-
-    while ($geracoes < 10) {
-        for ($j = 0; $j < $quantidade_de_individuos; $j++) {
-            $individuos[$j] = new individuo();
-            for ($i = 0; $i < 8; $i++) {
-                $individuos[$j]->cod_genetico .= rand(0, 1);
+    while ($geracoes <= 10) {
+        $i=0;
+        while (isset($resultado[$i])) {
+            if ($resultado[$i] == $melhor_individuo) {
+                echo "melhor individuo: " . $i . "  " . $resultado[$i] . "\n";
+                return 0;
             }
+            $i++;
         }
-        for ($i = 0; $i < $quantidade_de_individuos; $i++) {
-            echo "INDIVIDUO Nº " . $i . "      CODIGO GENETICO: " . $individuos[$i]->cod_genetico . "\n";
-            if ($individuos[$i]->cod_genetico == $melhor_individuo) {
-                echo "individuo: " . $i . "     Gerção: " . $geracoes . "    Codigo Genetico:" . $individuos[$i]->cod_genetico;
-                return 1;
-            }
-        }
-        echo "\n\n\n\n\n**************************************************************************************************************************\n\n\n\n\n";
-        $t = 1;
-        for ($i = 0; $i < $quantidade_de_individuos; $i++) {
-            if (isset($individuos[$i]) && isset($individuos[$i + 1])) {
-                if (substr_count($individuos[$i]->cod_genetico, '1') >= $criterio_de_selecao && substr_count($individuos[$i + 1]->cod_genetico, '1') >= $criterio_de_selecao) {
-                    $nova_geracao[$i] = new individuo();
-                    //==========================================================================//
-                    $nova_geracao[$i]->cod_genetico = substr($individuos[$i]->cod_genetico, -4);     //        * M U T A Ç Ã O (PAI)
-                    $nova_geracao[$i]->cod_genetico .= substr($individuos[$i + 1]->cod_genetico, -4);  //        * M U T A Ç Ã O (MÃE)
-                    //==========================================================================//
-                    echo "INDIVIDUO MUTADO: " . $t . "       CODIGO GENETICO: " . $nova_geracao[$i]->cod_genetico . "     PAI:" . $individuos[$i]->cod_genetico . "     MAE:" . $individuos[$i + 1]->cod_genetico . "\n";
-                    if ($nova_geracao[$i]->cod_genetico == $melhor_individuo) {
-                        echo "individuo Novo: " . $t . "     Gerção: " . $geracoes . "    Codigo Genetico:" . $nova_geracao[$i]->cod_genetico;
-                        return 1;
-                    }
-                    $t++;
-                }
-            }
-        }
-        echo "\n\n\n\n\n================================                      NOVA GERÇÃO   ".($geracoes+1)."º                  ================================\n\n\n\n\n";
+        echo "\n\n\n\n\n***********************************************nova geração *************************************************\n\n\n\n\n";
+        $resultado = analise($resultado);
         $geracoes++;
     }
 }
-analise();
+function analise($individuos){
+    $criterio_de_selecao = 4;            //numero < ou = a 8
+        $aptos = array();
+        $inaptos = array();
+        $novosIndividuos_aptos = array();
+        $novosIndividuos_inaptos = array();
+        $novosIndividuos = array();
+        $i = 0;
+        while (isset($individuos[$i])){
+            if (substr_count($individuos[$i], '1') > $criterio_de_selecao) {
+                $aptos[$i] = $individuos[$i];
+            }else{
+                $inaptos[$i] = $individuos[$i];
+            }
+            $i++;
+        }
+        $total = count($aptos);
+        $j = 0;
+        for($i = 0; $i <= $total; $i++){
+            if (isset($aptos[$i]) && isset($aptos[$i+1])) {
+                    $novosIndividuos_aptos[$j] = substr($aptos[$i], 0, 4);
+                    $novosIndividuos_aptos[$j] .= substr($aptos[$i + 1], -4);
+                $j++;
+                $i += 2;
+            }
+        }
+        $total = count($inaptos);
+        $j = 0;
+        for($i = 0; $i <= $total; $i++){
+            if (isset($inaptos[$i]) && isset($inaptos[$i+1])) {
+                    $novosIndividuos_inaptos[$i] = substr($inaptos[$i], 0, 4);
+                    $novosIndividuos_inaptos[$i] .= substr($inaptos[$i + 1], -4);
+                $j++;
+                $i += 2;
+            }
+        }
+        $total = count($inaptos)+count($aptos);
+        $j = 0;
+        for($i = 0; $i <= $total; $i++){
+            if (isset($inaptos[$i]) && isset($aptos[$i])) {
+                $novosIndividuos[$i] = substr($inaptos[$i], 0, 4);
+                $novosIndividuos[$i] .= substr($aptos[$i], -4);
+                $j++;
+                $i += 2;
+            }
+        }
+        $individuosnovageracao = array_merge($novosIndividuos_aptos, $novosIndividuos_inaptos, $novosIndividuos);
+        $total = count($individuosnovageracao);
+        for ($i = 0; $i < $total; $i++){
+            echo "INDIVIDUO: ". $i . "   CODIGO GENETICO: ".$individuosnovageracao[$i]."\n";
+        }
+        return $individuosnovageracao;
+}
+$individuos = gerarindividuos();
+$i = 0;
+echo "Geração Inicial\n";
+        while (isset($individuos[$i])){
+            echo "INDIVIDUO: ". $i . "   CODIGO GENETICO: ".$individuos[$i]."\n";
+            $i++;
+        }
+echo "\n\n\n\n\n***********************************************nova geração *************************************************\n\n\n\n\n";
+$resultado = analise($individuos);
+selecao($resultado);
